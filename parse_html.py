@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 
-import re
+from utils import *
 
 
 class HtmlParser:
@@ -24,11 +24,11 @@ class HtmlParser:
             print("未找到商品信息元素")
             return None
         if not hovers:
-            print("为找到浮动信息元素（货描等指标）")
+            print("未找到浮动信息元素（货描等指标）")
             return None
 
         for i in range(len(containers)):
-            print("Parsing product %d." % (i + 1))
+            print("Parsing product #%d." % (i + 1))
             title = self.get_product_title(containers[i])
             image_url = self.get_image_url(containers[i])
             url = self.get_url(containers[i])
@@ -41,7 +41,7 @@ class HtmlParser:
             data = {
                 'title': title,
                 'image_url': image_url,
-                'url': url,
+                'ads_url': url,
                 'supplier': supplier,
                 'is_niu': is_niu,
                 'years': years,
@@ -59,8 +59,15 @@ class HtmlParser:
                 'delivery': delivery
             }
             product_info.append(data)
-        for item in product_info:
-            print(item)
+
+        # for item in product_info:
+        #     for key, value in item.items():
+        #         if value is None:
+        #             print("", end=",")
+        #         else:
+        #             print(value, end=",")
+        #     print('\n')
+        return product_info
 
     @staticmethod
     def get_product_title(container):
@@ -72,24 +79,24 @@ class HtmlParser:
     @staticmethod
     def get_image_url(container):
         # 获取商品图片链接
-        element = container.find_element_by_xpath(".//div[1]/a/img")
+        element = container.find_element_by_xpath(".//div[1]//a//img")
         image_url = element.get_attribute('src')
         return image_url
 
     @staticmethod
     def get_url(container):
         # 获取商品链接
-        elements = container.find_elements_by_xpath(".//div[4]/a")
+        elements = container.find_elements_by_xpath(".//div[4]//a")
         url = elements[-1].get_attribute('href')
         return url
 
     @staticmethod
     def get_supplier_info(container):
         # 获取供应商名称
-        element = container.find_element_by_xpath(".//div[5]/a")
+        element = container.find_element_by_xpath(".//div[5]//a")
         supplier = element.text
 
-        supplier_qualification_eles = container.find_elements_by_xpath(".//div[5]/span")
+        supplier_qualification_eles = container.find_elements_by_xpath(".//div[5]//span")
         is_niu = False
         years = None
         if len(supplier_qualification_eles) == 0:
@@ -101,6 +108,8 @@ class HtmlParser:
         if len(supplier_qualification_eles) == 2:
             is_niu = True
             years = supplier_qualification_eles[0].find_element_by_xpath(".//a").text
+        if years:
+            years = int_number(years)
         return supplier, is_niu, years
 
     @staticmethod
@@ -109,6 +118,7 @@ class HtmlParser:
         elements = container.find_elements_by_xpath(".//div[3]/span")
         if len(elements) > 1:
             amount_30 = elements[-1].get_attribute('title')
+            amount_30 = currency(amount_30)
         else:
             amount_30 = None
         return amount_30
@@ -118,10 +128,11 @@ class HtmlParser:
         # 获取回头率及经营模式
         rebuy = None
         model = None
-        rebuy_elements = container.find_elements_by_xpath(".//div[6]/span")
-        model_element = container.find_element_by_xpath(".//div[6]/i")
+        rebuy_elements = container.find_elements_by_xpath(".//div[6]//span")
+        model_element = container.find_element_by_xpath(".//div[6]//i")
         if rebuy_elements:
             rebuy = rebuy_elements[-1].text
+            rebuy = percent(rebuy)
         if model_element:
             model = model_element.text
         return rebuy, model
@@ -132,12 +143,16 @@ class HtmlParser:
         price = [None] * 3
         condition = [None] * 3
         price_elements = hover.find_elements_by_xpath(".//div[contains\
-            (@class,'s-widget-offershopwindowdealinfo sm-offer-dealInfo sm-offer-dealInfo')]/span/*[@title]")
+            (@class,'s-widget-offershopwindowdealinfo sm-offer-dealInfo sm-offer-dealInfo')]//span//*[@title]")
         for i, item in enumerate(price_elements):
             if (i % 2) == 0:  # 偶数
                 price[round(i / 2)] = item.get_attribute('title')
             else:  # 奇数
                 condition[round(i / 3)] = item.get_attribute('title')
+        # 转化为货币值
+        for x, item in enumerate(price):
+            if price[x]:
+                price[x] = currency(price[x])
         return price[0], condition[0], price[1], condition[1], price[2], condition[2]
 
     @staticmethod
@@ -146,22 +161,29 @@ class HtmlParser:
         def sign(text):
             if text.startswith('高于'):
                 return 1
-            if text.startswith('低于'):
+            elif text.startswith('低于'):
                 return -1
+            else:
+                print("无该指标数据，返回0")
+                return 0
 
-        def percent(text):
-            return float(re.findall(r'-?\d+\.?\d*e?-?\d*?', text)[-1]) / 100
-
-        indicator_elements = hover.find_elements_by_xpath(".//div[contains(@class,'sm-offer-bsr-row')]/span")
+        indicator_elements = hover.find_elements_by_xpath(".//div[contains(@class,'sm-offer-bsr-row')]//span")
         if not indicator_elements:
-            print("没有数据")
+            print("货描、响应、发货等均无数据。")
             return None, None, None
 
         indicator = []
         for i, item in enumerate(indicator_elements):
             indicator.append(item.get_attribute("innerHTML"))
         # 货描、响应、发货
-        desc = sign(indicator[1]) * percent(indicator[2])
-        response = sign(indicator[4]) * percent(indicator[5])
-        delivery = sign(indicator[7]) * percent(indicator[8])
+        desc_sign = sign(indicator[1])
+        desc_percent = percent(indicator[2])
+        desc = desc_sign * desc_percent if desc_percent else None
+        response_sign = sign(indicator[4])
+        response_percent = percent(indicator[5])
+        response = response_sign * response_percent if response_percent else None
+        delivery_sign = sign(indicator[7])
+        delivery_percent = percent(indicator[8])
+        delivery = delivery_sign * delivery_percent if delivery_percent else None
+        # print(desc_sign, desc_percent, response_sign, response_percent, delivery_sign, delivery_percent)
         return desc, response, delivery
