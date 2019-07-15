@@ -137,4 +137,13 @@ time.sleep(10)
 `self.driver.find_element_by_xpath('//a[contains(text(), "退出")]').click()`
 
 #### 获取元素的html内容
-`shop_name.get_attribute('innerHTML')`
+`element.get_attribute('innerHTML')`
+
+#### 获取元素的文本值
+`element.get_attribute(‘textContent’)`
+
+#### 导出python安装包环境
+`pip freeze > requirements.txt`
+
+#### 导入requirements文件
+`pip install -r requirements.txt`

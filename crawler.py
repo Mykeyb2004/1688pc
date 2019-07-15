@@ -5,6 +5,8 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
+from parse_html import HtmlParser
+from save_db import Saver
 
 
 # from selenium.webdriver.common.by import By
@@ -79,8 +81,20 @@ class Crawler:
         if next_page.is_enabled():
             next_page.click()
 
-    def crawl_all_pages(self):
-        for i in range(self._current_page, self._page_counts):
-            print(i)
+    def crawl_pages(self):
+        parser = HtmlParser(self.driver)
+        save = Saver()
+
+        for i in range(self._current_page, self._page_counts + 1):
+            print("Parsing page.")
+            # 刷新页面到底部
+            self.goto_page_bottom()
+            # 悬停每个商品上，获取价格数据
+            self.hover_all(0.5)
+            # 解析页面数据
+            records = parser.get_page_data()
+            # 保存记录
+            save.to_db(records)
             self.scroll_page()
+            print("Wait and delay.")
             sleep(6)

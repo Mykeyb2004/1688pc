@@ -27,6 +27,8 @@ class HtmlParser:
             print("未找到浮动信息元素（货描等指标）")
             return None
 
+        keyword = self._driver.find_elements_by_xpath("//input[@class='sm-widget-input']")[0].get_attribute('value')
+
         for i in range(len(containers)):
             print("Parsing product #%d." % (i + 1))
             title = self.get_product_title(containers[i])
@@ -56,10 +58,12 @@ class HtmlParser:
                 'condition3': condition3,
                 'desc': desc,
                 'response': response,
-                'delivery': delivery
+                'delivery': delivery,
+                'keyword': keyword
             }
             product_info.append(data)
-
+            # if i >= 9:  # 仅在调试时用，限制解析数据的条目数
+            #     break
         # for item in product_info:
         #     for key, value in item.items():
         #         if value is None:
