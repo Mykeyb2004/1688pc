@@ -48,3 +48,16 @@ def int_number(text, null_value=None):
         return int(number[-1])
     else:
         return null_value
+
+
+def get_pc_url(url):
+    """
+    从长链接中获取短链接
+    :param url: 待处理链接（通过“?”解析出该符号前部分的链接地址）
+    :return: 返回短链接
+    """
+    urls = url.split('?')
+    if urls:
+        return urls[0]
+    else:
+        return None

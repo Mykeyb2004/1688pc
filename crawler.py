@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from parse_html import HtmlParser
 from save_db import Saver
+from config import *
 
 
 # from selenium.webdriver.common.by import By
@@ -14,7 +15,6 @@ from save_db import Saver
 
 
 class Crawler:
-    # container_pattern = ""
     _page_counts = 0
     _current_page = 0
 
@@ -53,11 +53,12 @@ class Crawler:
         :return:
         """
         containers = self.driver.find_elements_by_xpath('.//div[@class="imgofferresult-mainBlock"]')
-        for item in containers:
+        for i, item in enumerate(containers):
             hover = ActionChains(self.driver).move_to_element(item)
             hover.perform()
+            if DEBUG and i > 10:
+                break
             sleep(delay)
-        print("商品数：", len(containers))
 
     def goto_page_bottom(self, scroll_times=3, delay=1.5):
         """
@@ -85,16 +86,32 @@ class Crawler:
         parser = HtmlParser(self.driver)
         save = Saver()
 
+        run_times = 0
         for i in range(self._current_page, self._page_counts + 1):
-            print("Parsing page.")
+            run_times += 1
+            print("Preparing to parse page #%d" % i)
+
             # 刷新页面到底部
+            print("  Refresh current page.")
             self.goto_page_bottom()
+
             # 悬停每个商品上，获取价格数据
+            print("  Hover current page.")
             self.hover_all(0.5)
+
             # 解析页面数据
+            print("  Parse current page.")
             records = parser.get_page_data()
+
             # 保存记录
+            print("Saving to the database.")
             save.to_db(records)
+
+            if DEBUG and run_times >= 1:
+                break
+
+            print("Scroll to the next page.")
             self.scroll_page()
+
             print("Wait and delay.")
             sleep(6)

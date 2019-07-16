@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 
 
-from crawler import Crawler
+from convert_db import Converter
 
 if __name__ == '__main__':
-    crawler = Crawler()
-    crawler.crawl_pages()
+    converter = Converter()
+    converter.convert_ads_url()
     print("Job is done.")

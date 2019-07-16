@@ -3,6 +3,7 @@
 
 
 from utils import *
+from config import *
 
 
 class HtmlParser:
@@ -28,9 +29,10 @@ class HtmlParser:
             return None
 
         keyword = self._driver.find_elements_by_xpath("//input[@class='sm-widget-input']")[0].get_attribute('value')
+        print("  Total records = [%d]\n  Keywords = [%s]" % (len(containers), keyword))
 
         for i in range(len(containers)):
-            print("Parsing product #%d." % (i + 1))
+            print("  Parsing product #%d." % (i + 1))
             title = self.get_product_title(containers[i])
             image_url = self.get_image_url(containers[i])
             url = self.get_url(containers[i])
@@ -62,15 +64,10 @@ class HtmlParser:
                 'keyword': keyword
             }
             product_info.append(data)
-            # if i >= 9:  # 仅在调试时用，限制解析数据的条目数
-            #     break
-        # for item in product_info:
-        #     for key, value in item.items():
-        #         if value is None:
-        #             print("", end=",")
-        #         else:
-        #             print(value, end=",")
-        #     print('\n')
+
+            if DEBUG:
+                if i >= 9:  # 仅在调试时用，限制解析数据的条目数
+                    break
         return product_info
 
     @staticmethod
