@@ -61,3 +61,24 @@ def get_pc_url(url):
         return urls[0]
     else:
         return None
+
+
+def get_id_from_url(url):
+    """
+    获取商品id
+    :param url: 形如 (https://detail.1688.com/offer/566047493935.html)
+    :return: 返回id
+    """
+    url = url.split('/')[-1]
+    pos = url.find('.')
+    url = url[:pos]
+    return url
+
+
+def mobile_url(product_id):
+    """
+    通过id生成移动端商品链接
+    :param product_id: 商品id
+    :return: 移动端商品链接
+    """
+    return "https://m.1688.com/offer/{0}.htm".format(product_id)
