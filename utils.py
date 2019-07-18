@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import re
+import json
 
 
 def currency(text, null_value=None):
@@ -82,3 +83,13 @@ def mobile_url(product_id):
     :return: 移动端商品链接
     """
     return "https://m.1688.com/offer/{0}.htm".format(product_id)
+
+
+def load_config(filename):
+    """
+    载入配置文件（JSON格式）
+    :param filename: 文件路径和文件名
+    :return: 配置参数的数组
+    """
+    config = json.load(open(filename, encoding='UTF-8'))
+    return config
