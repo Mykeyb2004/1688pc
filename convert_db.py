@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import dataset
-from update_ads_url import AdsUrl
+from ads_url import AdsUrl
 from utils import get_pc_url
 from config import *
 
