@@ -2,13 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 import dataset
+from config import *
 
 
 class Saver:
 
     def __init__(self):
-        self._db = dataset.connect('mysql://root:mini08!@192.168.0.220:3306/1688?charset=utf8')
-        self._table = self._db['1688pc_copy1']
+        self._db = dataset.connect(CONNECTION)
+        self._table = self._db[TABLE]
 
     def to_db(self, records):
         for i, record in enumerate(records):
