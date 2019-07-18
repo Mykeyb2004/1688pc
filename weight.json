@@ -1,0 +1,26 @@
+{
+  "sql": "select id, title, price1, logistics_cost, amount_30, rebuy, `desc` , response, delivery, years, is_niu from 1688pc where title like '%%跳跳椅%%' and price1 > 50",
+  "top_rank_fields": [
+    "rebuy",
+    "amount_30",
+    "desc",
+    "response",
+    "delivery",
+    "years",
+    "is_niu"
+  ],
+  "percent_rank_fields": [
+    "price"
+  ],
+  "best_percent_rank": 0.35,
+  "weight": {
+    "price": 25,
+    "rebuy": 10,
+    "amount_30": 10,
+    "desc": 20,
+    "response": 10,
+    "delivery": 15,
+    "years": 5,
+    "is_niu": 5
+  }
+}
