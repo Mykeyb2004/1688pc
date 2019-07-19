@@ -41,6 +41,10 @@ class HtmlParser:
             rebuy, model = self.get_rebuy_and_model(containers[i])
             price1, condition1, price2, condition2, price3, condition3 = self.get_prices(hovers[i])
             desc, response, delivery = self.get_indicators(hovers[i])
+            # 若为广告链接，继续查找
+            if url.startswith('https://dj.1688.com'):
+                print("    [广告链接]")
+                url = self.ads_to_url(hovers[i], url)
             # 组合数据字段
             data = {
                 'title': title,
@@ -72,10 +76,35 @@ class HtmlParser:
 
     @staticmethod
     def get_product_title(container):
-        # 获取商品名称（含有“广告”字样）
+        """
+        获取商品名称
+        :param container: 商品信息框容器
+        :return: title - 商品标题
+        """
         element = container.find_element_by_xpath(".//div[4]").text.split('\n')
         title = element[-1]
         return title
+
+    @staticmethod
+    def ads_to_url(container, url):
+
+        def get_id_from_ads_url(url_string):
+            start = url_string.find("=")
+            ending = url_string.find("&")
+            return url_string[start + 1:ending]
+
+        # 获取相似、同款、参谋元素的上级容器
+        pattern = ".//div[starts-with(@class, 'sm-offer-maskSimilar')]"
+        same_elements = container.find_elements_by_xpath(pattern)
+        for item in same_elements:
+            a_elements = item.find_elements_by_xpath('.//a')
+            if a_elements:  # 存在a标签则可以提取商品id
+                pid = a_elements[0].get_attribute("href")  # 从链接中提取id
+                pid = get_id_from_ads_url(pid)
+                url = 'https://detail.1688.com/offer/{0}.html'.format(pid)
+                return url
+            else:  # 不存在则只能返回原值
+                return url
 
     @staticmethod
     def get_image_url(container):
