@@ -3,7 +3,8 @@
 
 
 import dataset
-from time import sleep
+import os
+import platform
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -30,7 +31,14 @@ class Logistic:
         # 把chrome设置成无界面模式，不论windows还是linux都可以，自动适配对应参数
         if not DEBUG:
             chrome_options.add_argument("--headless")
-        self._driver = webdriver.Chrome(chrome_options=chrome_options)
+
+        # 根据操作系统指定不同的chromedriver
+        if platform.system() == 'Windows':
+            chrome_driver = os.path.abspath('.') + '\\chromedriver.exe'
+        else:
+            chrome_driver = "/usr/lib/chromium-browser/chromedriver"
+        print(chrome_driver)
+        self._driver = webdriver.Chrome(executable_path=chrome_driver, chrome_options=chrome_options)
         self._wait = WebDriverWait(self._driver, 3)
         # self._driver.implicitly_wait(10)
         print("Starting Webdriver...")
