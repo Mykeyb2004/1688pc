@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import os
+import platform
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -10,10 +12,6 @@ from save_db import Saver
 from config import *
 
 
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.common.keys import Keys
-
-
 class Crawler:
     _page_counts = 0
     _current_page = 0
@@ -21,7 +19,12 @@ class Crawler:
     def __init__(self):
         chrome_options = Options()
         chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+        # 根据操作系统指定不同的chromedriver
+        if platform.system() == 'Windows':
+            chrome_driver = os.path.abspath('.') + '\\chromedriver.exe'
+        else:
+            chrome_driver = "/usr/lib/chromium-browser/chromedriver"
+        self.driver = webdriver.Chrome(executable_path=chrome_driver, chrome_options=chrome_options)
         self.driver.implicitly_wait(5)
         self.switch_to_1688()
         self._page_counts = int(self.driver.find_element_by_xpath("//em[contains(@class,'fui-paging-num')]").text)
