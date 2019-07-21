@@ -19,8 +19,8 @@
 
 ## 具体使用
 1. 执行`python main.py`将1688搜索页面上的数据保存至数据库中。
-2. 执行`python update-ads-url.py`将其中含有的广告链接转化为普通商品链接。
-3. 执行`python update-logistic.py`从移动端将最后的物流费数据更新至数据库中。
+2. 执行`python update-ads.py`将其中含有的广告链接转化为普通商品链接。
+3. 执行`python update-logistics.py`从移动端将最后的物流费数据更新至数据库中。
 4. 执行`python update-weight.py`，通过加权算法更新weight列数值，排序靠前的商品即为筛选出的货源。
 
 ## TODO
