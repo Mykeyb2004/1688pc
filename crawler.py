@@ -7,6 +7,7 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 from parse_html import HtmlParser
 from save_db import Saver
 from config import *
@@ -94,6 +95,9 @@ class Crawler:
             run_times += 1
             print("Preparing to parse page #%d" % i)
 
+            # 探测网络是否正常展示数据，如果没有则刷新数据
+            self.refresh()
+
             # 刷新页面到底部
             print("  Refresh current page.")
             self.goto_page_bottom()
@@ -103,7 +107,7 @@ class Crawler:
             self.hover_all(0.5)
 
             # 解析页面数据
-            print("  Parse current page.")
+            print("  Parse current page.  [{0}/{1}]".format(i, self._page_counts + 1))
             records = parser.get_page_data()
 
             # 保存记录
@@ -118,3 +122,12 @@ class Crawler:
 
             print("Wait and delay.")
             sleep(6)
+
+    def refresh(self):
+        # 若出现“网络出错，请刷新重试”,则点击重试
+        try:
+            retry = self.driver.find_element_by_link_text('刷新')
+            if retry.is_enabled():
+                retry.click()
+        except NoSuchElementException:
+            return
