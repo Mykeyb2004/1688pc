@@ -205,15 +205,26 @@ class HtmlParser:
         indicator = []
         for i, item in enumerate(indicator_elements):
             indicator.append(item.get_attribute("innerHTML"))
-        # 货描、响应、发货
-        desc_sign = sign(indicator[1])
-        desc_percent = percent(indicator[2])
-        desc = desc_sign * desc_percent if desc_percent else None
-        response_sign = sign(indicator[4])
-        response_percent = percent(indicator[5])
-        response = response_sign * response_percent if response_percent else None
-        delivery_sign = sign(indicator[7])
-        delivery_percent = percent(indicator[8])
-        delivery = delivery_sign * delivery_percent if delivery_percent else None
-        # print(desc_sign, desc_percent, response_sign, response_percent, delivery_sign, delivery_percent)
+        # 货描、响应、发货 (若无指标数值，则以零值返回)
+        try:
+            desc_sign = sign(indicator[1])
+            desc_percent = percent(indicator[2])
+            desc = desc_sign * desc_percent if desc_percent else None
+        except IndexError:
+            desc = 0
+
+        try:
+            response_sign = sign(indicator[4])
+            response_percent = percent(indicator[5])
+            response = response_sign * response_percent if response_percent else None
+        except IndexError:
+            response = 0
+
+        try:
+            delivery_sign = sign(indicator[7])
+            delivery_percent = percent(indicator[8])
+            delivery = delivery_sign * delivery_percent if delivery_percent else None
+        except IndexError:
+            delivery = 0
+
         return desc, response, delivery
