@@ -14,8 +14,8 @@ class Converter:
         self._table = self._db[TABLE]
 
     def convert_ads_url(self):
-        # sql = "SELECT id, ads_url FROM 1688pc_copy1 WHERE ads_url LIKE 'https://dj.1688.com%'"
-        sql = "SELECT id, ads_url FROM " + TABLE
+        # 查询所有Url字段为空值的数据，将其中的广告链接进行转化，非广告链接则直接填入Url
+        sql = "SELECT id, ads_url, url FROM {} WHERE url IS NULL".format(TABLE)
         records = self._db.query(sql)
 
         if not records:
