@@ -37,6 +37,7 @@ class Converter:
                 if DEBUG and run_times >= 2:
                     break
             else:
+                print("Saving {}".format(row['ads_url']))
                 self.update_ads_url(dict(id=row['id'], url=row['ads_url']))
 
     def update_ads_url(self, record):
