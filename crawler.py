@@ -28,16 +28,22 @@ class Crawler:
         self.driver = webdriver.Chrome(executable_path=chrome_driver, chrome_options=chrome_options)
         self.driver.implicitly_wait(5)
         self.switch_to_1688()
-        self._page_counts = int(self.driver.find_element_by_xpath("//em[contains(@class,'fui-paging-num')]").text)
-        self._current_page = int(self.driver.find_element_by_xpath("//a[contains(@class,'fui-current')]").text)
+        # self._page_counts = self.get_page_counts()
+        # self._current_page = self.get_current_page()
 
     @property
     def page_counts(self):
-        return self._page_counts
+        return self.get_page_counts()
 
     @property
     def current_page(self):
-        return self._current_page
+        return self.get_current_page()
+
+    def get_page_counts(self):
+        return int(self.driver.find_element_by_xpath("//em[contains(@class,'fui-paging-num')]").text)
+
+    def get_current_page(self):
+        return int(self.driver.find_element_by_xpath("//a[contains(@class,'fui-current')]").text)
 
     def switch_to_1688(self):
         """
@@ -87,13 +93,13 @@ class Crawler:
             next_page.click()
 
     def crawl_pages(self):
-        parser = HtmlParser(self.driver)
-        save = Saver()
+        parser = HtmlParser(self.driver)  # 初始化解析类
+        save = Saver()  # 初始化数据保存类
 
         run_times = 0
-        for i in range(self._current_page, self._page_counts + 1):
-            run_times += 1
-            print("Preparing to parse page #%d" % i)
+        while True:
+            run_times += 1  # 记录运行次数，仅用于调试
+            print("Preparing to parse page ({0}/{1})".format(self.current_page, self.page_counts))
 
             # 探测网络是否正常展示数据，如果没有则刷新数据
             self.refresh()
@@ -107,21 +113,26 @@ class Crawler:
             self.hover_all(0.5)
 
             # 解析页面数据
-            print("  Parse current page.  [{0}/{1}]".format(i, self._page_counts + 1))
+            print("  Parse current page.")
             records = parser.get_page_data()
 
             # 保存记录
             print("Saving to the database.")
             save.to_db(records)
 
+            # 调试模式下的终止
             if DEBUG and run_times >= 1:
+                break
+
+            # 若当前页面数与总页面数相同，则停止循环
+            if self.current_page == self.page_counts:
                 break
 
             print("Scroll to the next page.")
             self.scroll_page()
 
             print("Wait and delay.")
-            sleep(6)
+            sleep(5)
 
     def refresh(self):
         # 若出现“网络出错，请刷新重试”,则点击重试
