@@ -13,5 +13,9 @@ class Saver:
 
     def to_db(self, records):
         for i, record in enumerate(records):
-            print("    - Saving record #%i: %s" % (i, record))
+            print("    - Saving #{} record:".format(i))
+            if DEBUG:
+                print("      %s" % record)
+            else:
+                print("      %s  %s" % (record['title'], record['ads_url']))
             self._table.upsert(record, ['ads_url'])
