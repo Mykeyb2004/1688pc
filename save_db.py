@@ -13,7 +13,7 @@ class Saver:
 
     def to_db(self, records):
         for i, record in enumerate(records):
-            print("    - Saving #{} record:".format(i))
+            print("    - Saving #{} record:".format(i + 1))
             if DEBUG:
                 print("      %s" % record)
             else:
