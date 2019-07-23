@@ -11,7 +11,7 @@
  Target Server Version : 100138
  File Encoding         : 65001
 
- Date: 15/07/2019 16:44:44
+ Date: 23/07/2019 21:42:29
 */
 
 SET NAMES utf8mb4;
@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `1688pc`;
 CREATE TABLE `1688pc`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品标题',
-  `weight` int(3) NULL DEFAULT NULL COMMENT '选择权重',
+  `weight` float(10, 4) NULL DEFAULT NULL COMMENT '选择权重',
   `image_url` varchar(90) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品图片链接',
   `ads_url` varchar(800) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '原商品链接',
   `url` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '解析地址',
@@ -34,6 +34,7 @@ CREATE TABLE `1688pc`  (
   `amount_30` decimal(10, 2) NULL DEFAULT NULL COMMENT '30天内成交额',
   `rebuy` decimal(5, 4) NULL DEFAULT NULL COMMENT '回头率',
   `model` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '经营模式',
+  `logistics_cost` decimal(10, 2) NULL DEFAULT NULL COMMENT '物流费',
   `price1` decimal(10, 2) NULL DEFAULT NULL COMMENT '价格1',
   `condition1` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '采购量1',
   `price2` decimal(10, 2) NULL DEFAULT NULL COMMENT '价格2',
@@ -44,7 +45,12 @@ CREATE TABLE `1688pc`  (
   `response` decimal(5, 4) NULL DEFAULT NULL COMMENT '响应',
   `delivery` decimal(5, 4) NULL DEFAULT NULL COMMENT '发货',
   `crawel_date` date NULL DEFAULT NULL COMMENT '入库日期',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
+  `keyword` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '关键词',
+  `exclude` tinyint(1) NULL DEFAULT NULL COMMENT '排除标记',
+  `chosen` tinyint(1) NULL DEFAULT NULL COMMENT '选中标记',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `ix_1688pc_f21e7b476633b0d5`(`ads_url`(191)) USING BTREE,
+  INDEX `ix_1688pc_87ea5dfc8b8e384d`(`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 10668 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;
