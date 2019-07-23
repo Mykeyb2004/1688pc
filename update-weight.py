@@ -4,8 +4,6 @@
 
 from analyzer import Analyzer
 
-# from weight_it import CalculateWeight
-
 if __name__ == '__main__':
     print("Json文件的权重计算规则说明：")
     print("=" * 30)
