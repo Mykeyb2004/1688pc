@@ -13,6 +13,7 @@
     "price"
   ],
   "best_percent_rank": 0.35,
+  "best_value_rank": 0,
   "weight": {
     "price": 25,
     "rebuy": 10,
