@@ -11,6 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 from parse_html import HtmlParser
 from save_db import Saver
 from config import *
+from logfile import logger
 
 
 class Crawler:
@@ -28,8 +29,6 @@ class Crawler:
         self.driver = webdriver.Chrome(executable_path=chrome_driver, chrome_options=chrome_options)
         self.driver.implicitly_wait(5)
         self.switch_to_1688()
-        # self._page_counts = self.get_page_counts()
-        # self._current_page = self.get_current_page()
 
     @property
     def page_counts(self):
@@ -99,25 +98,25 @@ class Crawler:
         run_times = 0
         while True:
             run_times += 1  # 记录运行次数，仅用于调试
-            print("Preparing to parse page ({0}/{1})".format(self.current_page, self.page_counts))
+            logger.info("Preparing to parse page ({0}/{1})".format(self.current_page, self.page_counts))
 
             # 探测网络是否正常展示数据，如果没有则刷新数据
             self.refresh()
 
             # 刷新页面到底部
-            print("  Refresh current page.")
+            logger.info("  Refresh current page.")
             self.goto_page_bottom()
 
             # 悬停每个商品上，获取价格数据
-            print("  Hover current page.")
+            logger.info("  Hover current page.")
             self.hover_all(0.5)
 
             # 解析页面数据
-            print("  Parse current page.")
+            logger.info("  Parse current page.")
             records = parser.get_page_data()
 
             # 保存记录
-            print("Saving to the database.")
+            logger.info("Saving to the database.")
             save.to_db(records)
 
             # 调试模式下的终止
@@ -128,10 +127,10 @@ class Crawler:
             if self.current_page == self.page_counts:
                 break
 
-            print("Scroll to the next page.")
+            logger.info("Scroll to the next page.")
             self.scroll_page()
 
-            print("Wait and delay.")
+            logger.info("Wait and delay.")
             sleep(5)
 
     def refresh(self):
