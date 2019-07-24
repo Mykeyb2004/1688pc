@@ -15,7 +15,7 @@ class Converter:
 
     def convert_ads_url(self):
         # 查询所有Url字段为空值的数据，将其中的广告链接进行转化，非广告链接则直接填入Url
-        sql = "SELECT id, ads_url, url FROM {} WHERE url IS NULL".format(TABLE)
+        sql = "SELECT id, ads_url, url FROM {} WHERE url = '' or url is NULL".format(TABLE)
         records = self._db.query(sql)
 
         if not records:
